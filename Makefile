@@ -1,4 +1,5 @@
 TARGET_NAME := cap32
+EMULATORJS_THREADS ?= 0
 
 DEBUG   = 0
 LOG_PERFORMANCE = 0
@@ -379,6 +380,11 @@ else ifeq ($(platform), emscripten)
 	TARGET := $(TARGET_NAME)_libretro_$(platform).bc
 	PLATFORM_DEFINES +=-s USE_ZLIB=1
 	STATIC_LINKING=1
+	ifeq ($(EMULATORJS_THREADS), 1)
+		LDFLAGS += -pthread
+		CFLAGS += -pthread
+		CXXFLAGS += -pthread
+	endif
 # cross Windows
 else ifeq ($(platform), wincross64)
 	TARGET := $(TARGET_NAME)_libretro.dll
