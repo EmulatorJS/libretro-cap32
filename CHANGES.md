@@ -1,4 +1,9 @@
 # Future
+- RMP: Added 2 players support and added some RMPs from great two players games as start.
+- RMP: updated new binds, added Afterburner and Oh Mummy! Thanks to Haritz and Pablo from LOVG to point me.
+- TEST: some fixes added and minor cmocka updates.
+- VIDEO: Added 8bpp mode thx @fjtrujy for your help.
+- DB: sync clean-cpc-db v1.3
 - GUN: Fixed gunstick init.
 - DB: sync clean-cpc-db v1.2
 - RMP: Added Amsoft loader fixes and new classics and puzzle games.

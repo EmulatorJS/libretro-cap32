@@ -26,7 +26,7 @@ extern "C" {
 #include "z80.h"
 
 #define MIN_VHOLD_CROP 208
-#define MIN_VHOLD 250
+#define MIN_VHOLD_FULL 250
 
 // The next 4 bytes must remain together
 typedef union
@@ -70,6 +70,8 @@ void crtc_cycle(int repeat_count);
 void crtc_init(void);
 void crtc_reset(void);
 
+void render8bpp(void);
+void render8bpp_doubleY(void);
 void render16bpp(void);
 void render16bpp_doubleY(void);
 void render32bpp(void);

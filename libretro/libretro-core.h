@@ -81,14 +81,19 @@ extern unsigned amstrad_devices[ PORTS_NUMBER ];
 #define MAX_KEYSYMS 324
 #define MAX_BUTTONS 14
 #define MAX_PADCFG 5
+#define MAX_PADPLAYERS 2
 
+#define MAX_FILENAME 16
 
-// compile flags
+// compile flags (unused)
+//#define NO_EXTRA_HW // remove MF2 support
 //#define NO_FLOPPY_SND
 //#define NO_BORDER
-//#define LOWRES
-//#define M16B
-//#define MOUSE_RELATIVE // mouse relative movement
+
+//#define MOUSE_RELATIVE // test mouse relative movement
+//#define LOWRES // use lowres mode 384x272 (320x240 with crop)
+//#define M16BPP // force only 16bpps
+//#define M8BPP // force only 8bpps
 
 #define PIXEL_TRANSPARENT 0x0000
 #define PIXEL_DEPTH_DEFAULT_SIZE 4
@@ -194,7 +199,8 @@ typedef struct {
 
 typedef struct {
    uint32_t hash;
-   t_button_cfg btn_config;
+   t_button_cfg btn_config_player_1;
+   t_button_cfg btn_config_player_2;
    char loader_command[LOADER_MAX_SIZE];
    bool has_command;
    bool has_btn;
@@ -212,7 +218,7 @@ extern int retro_getStyle();
 extern int retro_getGfxBpp();
 extern int retro_getGfxBps();
 extern int retro_getAudioBuffer();
-extern unsigned int * retro_getScreenPtr();
+extern uint32_t * retro_getScreenPtr();
 
 // allowed file types
 #define EXT_FILE_CDT "cdt"

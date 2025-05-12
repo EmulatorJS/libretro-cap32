@@ -61,6 +61,10 @@ bool _loader_launch(char * key_buffer, char * filename)
       return false;
    }
 
+   #ifdef LOADER_DEBUG
+   printf("[LOADER] launch: %s \n", key_buffer);
+   #endif
+
    return true;
 }
 
@@ -118,18 +122,36 @@ bool _loader_find (char * key_buffer, retro_format_info_t *format)
       return false;
    }
 
-   if (first_bas != -1)
+   if (first_bas != -1) {
       cur_name_id = first_bas;
-   else if (first_spc != -1)
+
+      #ifdef LOADER_DEBUG
+      printf("[LOADER] FIND: first BAS EXT found at [%i] filename: %s \n", first_bas, catalogue.dirent[first_bas].filename);
+      #endif
+   }else if (first_spc != -1) {
       cur_name_id = first_spc;
-   else if (first_bin != -1)
+
+      #ifdef LOADER_DEBUG
+      printf("[LOADER] FIND: first EMPTY EXT found at [%i] filename: %s \n", first_spc, catalogue.dirent[first_spc].filename);
+      #endif
+   }else if (first_bin != -1) {
       cur_name_id = first_bin;
+
+      #ifdef LOADER_DEBUG
+      printf("[LOADER] FIND: first BIN EXT found at [%i] filename: %s \n", first_bin, catalogue.dirent[first_bin].filename);
+      #endif
+   }
 
    return _loader_launch(key_buffer, catalogue.dirent[cur_name_id].filename);
 }
 
 bool _loader_one_listed(char * key_buffer)
 {
+
+   #ifdef LOADER_DEBUG
+   printf("ONE: CPM:%i, ENTRIES:%i, HIDDEN:%i\n", game_configuration.is_cpm, catalogue.entries_listed_found, catalogue.entries_hidden_found);
+   #endif
+
    if (!game_configuration.is_cpm && catalogue.entries_listed_found != 1)
       return false;
 
@@ -207,13 +229,19 @@ void _loader_run(char * key_buffer, retro_format_info_t *format, t_drive *curren
       return;
 
    // first we try to find classic run filenames
-   if (_loader_find_file(key_buffer, "DISC"))
+   if (_loader_find_file(key_buffer, "DISC.")) // DISC.*
       return;
 
-   if (_loader_find_file(key_buffer, "DISK"))
+   if (_loader_find_file(key_buffer, "DISC")) // DISC*.*
+      return;
+
+   if (_loader_find_file(key_buffer, "DISK.")) // DISK.*
       return;
 
    if (_loader_find_file(key_buffer, "JEU.BAS"))
+      return;
+
+   if (_loader_find_file(key_buffer, "ELITE.BAS"))
       return;
 
    if (_loader_one_listed(key_buffer))

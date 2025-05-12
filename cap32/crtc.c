@@ -65,6 +65,7 @@ extern FILE *pfoDebug;
 
 #define MAX_VHOLD 380
 #define MID_VHOLD 295
+#define MIN_VHOLD 290
 #define MIN_VHOLD_RANGE 46
 #define MAX_VHOLD_RANGE 74
 
@@ -712,17 +713,10 @@ static INLINE void match_hsw(void)
 
 
 
-void NoChar(void)
-{
-   // nothing to do
-}
-
-
-
 void CharSL2(void)
 {
    CRTC.reg5 = CRTC.registers[5];
-   CRTC.CharInstSL = (void(*)(void))NoChar;
+   CRTC.CharInstSL = NULL;
 }
 
 
@@ -743,7 +737,7 @@ void CharMR2(void)
          }
       }
    }
-   CRTC.CharInstMR = (void(*)(void))NoChar;
+   CRTC.CharInstMR = NULL;
 }
 
 
@@ -1143,7 +1137,9 @@ void crtc_cycle(int repeat_count)
          }
       }
 
-      CPC.gun_CRTC();
+      // if necessary, process gunsticks
+      if (CPC.gun_CRTC)
+         CPC.gun_CRTC();
 
       CRTC.next_address = MAXlate[(CRTC.addr + CRTC.char_count) & 0x73ff] | CRTC.scr_base; // next address for PreRender
 
@@ -1309,8 +1305,13 @@ void crtc_cycle(int repeat_count)
          match_hsw();
       }
 
-      CRTC.CharInstSL(); // if necessary, process vertical total delay
-      CRTC.CharInstMR(); // if necessary, process maximum raster count delay
+      // if necessary, process vertical total delay
+      if (CRTC.CharInstSL)
+         CRTC.CharInstSL();
+
+      // if necessary, process maximum raster count delay
+      if (CRTC.CharInstMR)
+         CRTC.CharInstMR(); 
 
       if (CRTC.flag_newscan) { // scanline change requested?
          CRTC.flag_newscan = 0;
@@ -1499,8 +1500,8 @@ void crtc_reset(void)
    flags1.dt.HDSPTIMG = 0x03;
    new_dt.NewDISPTIMG = 0xff;
    new_dt.NewHDSPTIMG = 0x03;
-   CRTC.CharInstSL = (void(*)(void))NoChar;
-   CRTC.CharInstMR = (void(*)(void))NoChar;
+   CRTC.CharInstSL = NULL;
+   CRTC.CharInstMR = NULL;
 
    // ASIC vars - split screens and raster interrupt
    CRTC.split_addr = 0;
@@ -1508,7 +1509,7 @@ void crtc_reset(void)
    CRTC.sl_count = 0;
    CRTC.interrupt_sl = 0;
 
-   MinVSync = MID_VHOLD;
-   MaxVSync = MinVSync + MIN_VHOLD_RANGE + (int)ceil((float)((MinVSync - VDU.vertical_hold) *
+   MinVSync = MIN_VHOLD;
+   MaxVSync = MID_VHOLD + MIN_VHOLD_RANGE + (int)ceil((float)((MID_VHOLD - VDU.vertical_hold) *
     (MAX_VHOLD_RANGE - MIN_VHOLD_RANGE) / (MAX_VHOLD - VDU.vertical_hold)));
 }
